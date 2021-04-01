@@ -1,41 +1,44 @@
-const result = "products"
+const dbProducts = require("../db/models")
 
-const allProducts = (req, res, next) => {
- 
-//     .then((result) => {
-//     res.status(201).json(result); //return with ID -> 201 (CREATED)
-// })
-//     .catch(next);
-}
-const postProducts = (req, res, next) => {
-    
-//     .then((result) => {
-//     res.status(201).json(result); //return with ID -> 201 (CREATED)
-// })
-//     .catch(next);
-}
-const idProducts = (req, res, next) => { 
+class productsController {
+    static async getProducts(req, res) {
+        const products = await dbProducts.Products.findAll()
+        res.status(200).json(products);
+    }
 
-//     .then((result) => {
-//     res.status(201).json(result); //return with ID -> 201 (CREATED)
-// })
-//     .catch(next);
-}
+    static async postProducts(req, res) {
+        const products = await req.body
+        const result = await dbProducts.Products.create(products);
+        res.status(200).json(result);
+    }
 
-const updataProducts = (req, res, next) => {
- 
-//     .then((result) => {
-//     res.status(201).json(result); //return with ID -> 201 (CREATED)
-// })
-//     .catch(next);
-}
+    static async getProductsById(req, res) {
+        const id = req.params.id
+        const products = await dbProducts.Products.findOne({
+            where: { id: id },
+            attributes: {
+                exclude: ['password']
+            }
+        });
+        if (products == null) {
+            res.status(404).json("Usúario não encontrado!")
+        } else {
+            res.status(200).json(products)
+        }
+    }
 
-const deleteProducts = (req, res, next) => {
- 
-//     .then((result) => {
-//     res.status(201).json(result); //return with ID -> 201 (CREATED)
-// })
-//     .catch(next);
-}
+    static async updateProducts(req, res) {
+        const id = req.params.id
+        const product = await req.body
+        const products = await dbProducts.Products.update(product, { where: { id: id } })
+        res.status(200).json(products)
+    }
 
-module.exports = {allProducts, postProducts, idProducts, updataProducts, deleteProducts  }
+    static async deleteProducts(req, res) {
+        const id = req.params.id
+        const products = await dbProducts.Products.destroy({ where: { id: id } })
+        res.status(201).json(products)
+    }
+};
+
+module.exports = productsController
